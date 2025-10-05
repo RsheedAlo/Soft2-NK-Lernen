@@ -7,5 +7,8 @@
 // DEINE LÖSUNG:
 
 
+public interface CircleListener extends EventListener{
+    void circleChanged(CircleEvent event);
+}
 
 

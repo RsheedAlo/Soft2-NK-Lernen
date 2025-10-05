@@ -1,6 +1,29 @@
 import javax.swing.*;
 import java.awt.*;
 
+public class CirclePanel extends JPanel implements CircleListener{
+    private CircleModel model;
+
+    public CirclePanel(CircleModel model){
+        this.model = model;
+        this.model.addCircleListener(this);
+    }
+
+    @Override
+    public void circleChanged(CircleEvent event){
+        repaint();
+    }
+
+     @Override
+    public void paintComponent(Graphics g){
+        super.paintComponent(g);
+        List<Circle> circles = model.getCircles();
+
+        for(Circle circle : circles){
+            g.fillOval(circle.getX(), circle.getY(), circle.getRadius()*2, circle.getRadius()*2);
+        }
+    }
+}
 // =============================================================================
 // AUFGABE 5: CirclePanel - Swing View mit Observer
 // =============================================================================

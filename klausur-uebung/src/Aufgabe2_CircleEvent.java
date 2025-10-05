@@ -15,21 +15,21 @@ import java.util.EventObject;
 class CircleEvent extends EventObject{
 public enum Kind{ADDED, REMOVED, CHANGED}
 
-private Kind Kind;
+private Kind kind;
 private Circle affectedCircle;
 
 public CircleEvent(Object source, Kind kind, Circle circle){
 super(source);
-this.kind = Kind;
+this.kind = kind;
 this.affectedCircle = circle;
 
 }
 
 public Kind getKind(){return this.kind;}
-public void setKind(Kind k){this.kind = k;}
 
-public Circle getCircle(){return affectedCircle;}
-public void setCircle(Circle c){this.affectedCircle = c;}
+
+public Circle getAffectedCircle(){return affectedCircle;}
+
 
 
 }

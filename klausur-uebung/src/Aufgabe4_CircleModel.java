@@ -1,6 +1,46 @@
 import java.util.ArrayList;
 import java.util.List;
 
+class CircleModel{
+    private List<Circle> circles;
+    private List<CircleListener> listeners;
+
+    public CircleModel(){
+        circles = new ArrayList<>();
+        listeners = new ArrayList<>();
+    }
+
+    public void addCircleListener(CircleListener l){
+        listeners.add(l);
+    }
+
+    public void removeCircleListener(CircleListener l){
+        listeners.remove(l);
+    }
+
+    public List<Circle> getCircles(){
+        return new ArrayList<>(circles);
+    }
+
+    public void addCircle(Circle c){
+        circles.add(c);
+        fireCircleChanged(CircleEvent.Kind.ADDED, c);
+    }
+
+    public void fireCircleChanged(CircleEvent.Kind kind, Circle c){
+        CircleEvent event = new CircleEvent(this, kind, c);
+
+        for(CircleListener l : listeners){
+            l.circleChanged(event);
+        }
+    }
+
+    public void removeCircle(Circle c){
+        circles.remove(c);
+        fireCircleChanged(CircleEvent.Kind.REMOVED, c);
+    }
+}
+
 // =============================================================================
 // AUFGABE 4: CircleModel - Das WICHTIGSTE für die Klausur!
 // =============================================================================
