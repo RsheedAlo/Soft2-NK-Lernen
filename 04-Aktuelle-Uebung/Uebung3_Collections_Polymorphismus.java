@@ -36,6 +36,14 @@ import java.util.*;
 
 abstract class Message {
     // DEINE LÖSUNG:
+    protected int id;
+    public Message(int id){
+        this.id = id;
+    }
+
+    public abstract int getLines();
+
+    public int getId(){return this.id;}
 
 }
 
@@ -54,8 +62,17 @@ abstract class Message {
 // ▲▲▲ TIPPS ▲▲▲
 
 class SingleLineMessage extends Message {
-    // DEINE LÖSUNG:
+    // DEINE LÖSUNG: 
+    private String text;
 
+    public SingleLineMessage(int id, String text){
+        super(id);
+        this.text = text;
+    }
+
+    @Override
+    public int getLines(){return 1;}
+    public String getText(){return this.text;}
 }
 
 
@@ -76,6 +93,25 @@ class SingleLineMessage extends Message {
 
 class CompoundMessage extends Message {
     // DEINE LÖSUNG:
+    private List<Message> messages;
+
+    public CompoundMessage(int id){
+        super(id);
+        messages = new ArrayList<>();
+    }
+
+    public void add(Message msg){
+        messages.add(msg);
+    }
+
+    @Override
+    public int getLines(){
+        int sumOfM = 0;
+        for(Message m : messages){
+            sumOfM += m.getLines();
+        }
+        return sumOfM;
+    }
 
 }
 
@@ -98,6 +134,35 @@ class CompoundMessage extends Message {
 class TestMessages {
     public static void main(String[] args) {
         // DEINE LÖSUNG:
+        
+        Message m1 = new SingleLineMessage(1, "Hallo 1");
+        Message m2 = new SingleLineMessage(2, "Hallo 2");
+        Message m3 = new SingleLineMessage(3, "Hallo 3");
+
+        Message cm = new CompoundMessage(100);
+
+        ((CompoundMessage) cm).add(m1);
+        ((CompoundMessage) cm).add(m2);
+        ((CompoundMessage) cm).add(m3);
+
+        System.out.println(cm.getLines());
+
+
+
+        Message cm2 = new CompoundMessage(200);
+        ((CompoundMessage) cm2).add(m1);
+        ((CompoundMessage) cm2).add(m2);
+
+        Message cm3 = new CompoundMessage(300);
+        ((CompoundMessage) cm3).add(m1);
+        ((CompoundMessage) cm3).add(m2);
+
+        Message cm4 = new CompoundMessage(300);
+        ((CompoundMessage) cm4).add(cm3);
+        ((CompoundMessage) cm4).add(cm2);
+
+
+        System.out.println(cm4.getLines());
 
     }
 }
@@ -125,7 +190,16 @@ class TestMessages {
 
 abstract class Employee {
     // DEINE LÖSUNG:
+    protected int id;
 
+    public int getId(){return id;}
+
+    public abstract double getSalary();
+
+
+    public Employee(int id){
+        this.id = id
+    }
 }
 
 
@@ -144,7 +218,16 @@ abstract class Employee {
 
 class Developer extends Employee {
     // DEINE LÖSUNG:
+    private double salary;
+    @Override
+    public double getSalary(){
+        return salary;;
+    }
 
+    public Developer(int id){
+        super(id);
+        this.salary = 5000.0;
+    }
 }
 
 
@@ -163,6 +246,17 @@ class Developer extends Employee {
 
 class Manager extends Employee {
     // DEINE LÖSUNG:
+    private double baseSalary, bonus;
+
+    public Manager(int id){
+        super(id);
+        this.baseSalary = 6000.0;
+        this.bonus = 2000.0;
+    }
+
+    @Override
+    public double getSalary(){return baseSalary+bonus;}
+
 
 }
 
@@ -183,6 +277,30 @@ class Manager extends Employee {
 
 class Team {
     // DEINE LÖSUNG:
+    private List<Employee> emps;
+
+    public Team(){
+        emps = new ArrayList<>();
+    }
+
+    public void addEmp(Employee emp){emps.add(emp);}
+    public void removeEmp(Employee emp){emps.remove(emp);}
+
+    public List<Employee> getEmployees(){return new ArrayList<Employee>(emps);}
+
+
+    public double getTotalSalaries(){
+        return emps.stream()
+            .map(e -> e.getSalary())
+            .sum();
+    }
+
+    public void printAll(){
+        for(Employee emp : emps){
+            System.out.println(emp);
+        }
+    }
+
 
 }
 

@@ -42,7 +42,22 @@ import java.util.function.*;
 
 abstract class TextProcessor {
     // DEINE LÖSUNG:
+    protected List<String> words;
 
+    public TextProcessor(List<String> words){
+        this.words=words;
+    }
+
+    public List<String> getWords(){return words;}
+
+    public void doForEach(Function<String, String> action){
+        for(int i = 0; i<words.size(); i++){
+            String res = action.apply(words.get(i));
+            words.set(i, res);
+        }
+    }
+
+    public void printWrods(){System.out.println(words);} //kannst du mir den Unterschied erklären zwischen das und mit einer for schleife durch...
 }
 
 
@@ -58,6 +73,10 @@ abstract class TextProcessor {
 
 class MyTextProcessor extends TextProcessor {
     // DEINE LÖSUNG:
+    public MyTestProcessor(List<String> words){
+        super(words);
+    }
+
 
 }
 
@@ -87,6 +106,17 @@ class MyTextProcessor extends TextProcessor {
 class TestFunctions {
     public static void main(String[] args) {
         // DEINE LÖSUNG:
+        List<String> words = new ArrayList<>(Arrays.asList("hello", "world", "java"));
+        TextProcessor tp = new MyTextProcessor(words);
+
+        tp.doForEach(String::toUpperCase);
+        tp.printWrods();
+
+        tp.doForEach(s-> s+"!");
+        tp.printWrods();
+
+        tp.doForEach(s-> String.valueOf(s.length()));
+        tp.printWrods();
 
     }
 }
@@ -115,7 +145,30 @@ class TestFunctions {
 
 class MovieList {
     // DEINE LÖSUNG:
+    private List<String> movies;
 
+    public MovieList(){
+        this.movies = new ArrayList<>();
+    }
+
+    public void addMovie(String movie){
+        movies.add(movie);
+    }
+
+    public void forEach(Consumer<String> action){
+        for(String m : movies){
+            action.accept(m);
+        }
+    }
+    public void doForEach(Predicate<String> pred, Consumer<String> con){
+	for(String movie : movies){
+		if(pred.test(movie)){
+			con.accept(movie);
+		}
+	}
+
+}
+    
 }
 
 
@@ -145,6 +198,21 @@ class MovieList {
 class TestConsumers {
     public static void main(String[] args) {
         // DEINE LÖSUNG:
+
+        MovieList list = new MovieList();
+
+        list.add("suii");
+        list.add("meeeesi");
+        list.add("eyeliner");
+
+        list.forEach(movie -> System.out.println(movie));
+        list.forEach(movie -> System.out.println(movie.toUpperCase()));
+        list.forEach(movie -> {
+            if(movie.length()>7)
+                System.out.println(movie);
+        });
+
+
 
     }
 }
@@ -197,7 +265,15 @@ class TestConsumers {
 class TestPredicates {
     public static void main(String[] args) {
         // DEINE LÖSUNG:
+        Consumer<String> con = System.out::println;
+        Predicate<String> pred = m -> m.length>7;
 
+        MovieList list = new MovieList();
+        list.add("Inception");
+        list.add("Avatar");
+        list.add("Titanic");
+
+        list.doForEach(pred, con);
     }
 }
 
@@ -332,5 +408,120 @@ class TestSupplier {
 //
 // VERWENDUNG:
 // processor.doForEach(String::toUpperCase);
+//
+// =============================================================================
+
+
+// =============================================================================
+// EIGENES FUNCTIONAL INTERFACE ERSTELLEN
+// =============================================================================
+//
+// Du kannst dein eigenes FunctionalInterface erstellen mit @FunctionalInterface!
+// Wichtig: GENAU EINE abstrakte Methode!
+//
+// BEISPIEL 1: StringTransformer (wie Function<String, String>)
+// -----------------------------------------------------------------------------
+@FunctionalInterface
+interface StringTransformer {
+    String transform(String input);  // ← Genau eine abstrakte Methode!
+}
+
+// VERWENDUNG:
+// StringTransformer upper = s -> s.toUpperCase();
+// String result = upper.transform("hello");  // "HELLO"
+//
+// StringTransformer exclaim = s -> s + "!!!";
+// String result2 = exclaim.transform("wow");  // "wow!!!"
+//
+// -----------------------------------------------------------------------------
+//
+// BEISPIEL 2: NumberValidator (wie Predicate<Integer>)
+// -----------------------------------------------------------------------------
+@FunctionalInterface
+interface NumberValidator {
+    boolean isValid(int number);  // ← Genau eine abstrakte Methode!
+}
+
+// VERWENDUNG:
+// NumberValidator isEven = n -> n % 2 == 0;
+// boolean result = isEven.isValid(4);  // true
+//
+// NumberValidator isPositive = n -> n > 0;
+// boolean result2 = isPositive.isValid(-5);  // false
+//
+// -----------------------------------------------------------------------------
+//
+// BEISPIEL 3: MathOperation (zwei Parameter!)
+// -----------------------------------------------------------------------------
+@FunctionalInterface
+interface MathOperation {
+    int calculate(int a, int b);  // ← Genau eine abstrakte Methode!
+}
+
+// VERWENDUNG:
+// MathOperation add = (a, b) -> a + b;
+// int sum = add.calculate(5, 3);  // 8
+//
+// MathOperation multiply = (a, b) -> a * b;
+// int product = multiply.calculate(5, 3);  // 15
+//
+// -----------------------------------------------------------------------------
+//
+// BEISPIEL 4: Logger (wie Consumer<String>)
+// -----------------------------------------------------------------------------
+@FunctionalInterface
+interface Logger {
+    void log(String message);  // ← Genau eine abstrakte Methode!
+}
+
+// VERWENDUNG:
+// Logger consoleLogger = msg -> System.out.println("[LOG] " + msg);
+// consoleLogger.log("Application started");  // [LOG] Application started
+//
+// Logger errorLogger = msg -> System.err.println("[ERROR] " + msg);
+// errorLogger.log("Something went wrong");  // [ERROR] Something went wrong
+//
+// -----------------------------------------------------------------------------
+//
+// WARUM EIGENE FUNCTIONAL INTERFACES?
+// - Bessere Lesbarkeit: "StringTransformer" ist klarer als "Function<String,String>"
+// - Domain-spezifisch: "NumberValidator" zeigt Intent besser als "Predicate<Integer>"
+// - Custom-Methoden: Du kannst default/static Methoden hinzufügen!
+//
+// -----------------------------------------------------------------------------
+//
+// ADVANCED: Mit default-Methoden
+// -----------------------------------------------------------------------------
+@FunctionalInterface
+interface StringProcessor {
+    String process(String input);  // ← Abstrakte Methode
+
+    // Default-Methode (optional):
+    default String processAndPrint(String input) {
+        String result = process(input);
+        System.out.println(result);
+        return result;
+    }
+
+    // Static-Methode (optional):
+    static StringProcessor createUpperCase() {
+        return s -> s.toUpperCase();
+    }
+}
+
+// VERWENDUNG:
+// StringProcessor proc = s -> s + "!";
+// proc.processAndPrint("hello");  // Ausgabe: hello!
+//
+// StringProcessor upper = StringProcessor.createUpperCase();
+// String result = upper.process("hello");  // "HELLO"
+//
+// -----------------------------------------------------------------------------
+//
+// REGELN FÜR @FunctionalInterface:
+// ✓ GENAU EINE abstrakte Methode (SAM - Single Abstract Method)
+// ✓ Beliebig viele default-Methoden
+// ✓ Beliebig viele static-Methoden
+// ✗ NICHT mehr als eine abstrakte Methode!
 //
 // =============================================================================
